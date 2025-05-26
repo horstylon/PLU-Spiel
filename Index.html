@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PLU Lernspiel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f8ff;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    #mode-switch {
+      margin-bottom: 20px;
+    }
+    .card {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    img {
+      max-width: 100px;
+      display: block;
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .correct {
+      background-color: #c8e6c9;
+    }
+    .wrong {
+      background-color: #ffcdd2;
+    }
+  </style>
+</head>
+<body>
+  <h1>PLU Lernspiel</h1>
+  <div id="mode-switch">
+    <button onclick="setMode('learn')">Lernmodus</button>
+    <button onclick="setMode('quiz')">Quizmodus</button>
+  </div>
+
+  <div id="content"></div>
+
+  <script>
+    const pluData = {
+      1: "Banane (Lose)",
+      2: "Apfel (Lose Rot)",
+      4: "Sellerie (Lose)",
+      6: "Schnittbrötchen",
+      7: "Kaiserbrötchen",
+      11: "Ingwer (Bio Lose)",
+      18: "Birnen (Abate Lose)",
+      21: "Apfel (Lose Grün)",
+      23: "Bio-Banane (Lose)",
+      27: "Tomaten Rispen (Lose)",
+      30: "Chiquita",
+      32: "Pink Lady",
+      44: "Paprika Rot",
+      80: "Birne Rot",
+      81: "Trauben Hell Kernlos",
+      84: "Zucchini",
+      566: "Kiwi Gold",
+      620: "Porree",
+      642: "Avocado",
+      666: "Kopfsalat",
+      683: "Gurken",
+      739: "Kartoffeln 4KG",
+      745: "Lauchzwiebel",
+      751: "Radieschen",
+      883: "Blumenkohl",
+      7407: "Weltmeisterbrötchen",
+      7418: "Brezel",
+      7421: "Käse-Schinken-Croissant",
+      7422: "Nuss-Nougat-Croissant",
+      7425: "Buttercroissant",
+      7428: "Laugenstange Käse",
+      7433: "Weizenbaguette",
+      7434: "Steinofenbaguette",
+      7459: "Laugenstange",
+      7464: "Pinky Donut",
+      7476: "Berliner",
+      7489: "Würstchendog",
+      7497: "Käsebrezel",
+      7408: "Steinofenbrötchen"
+    };
+
+    let mode = "learn";
+    const contentDiv = document.getElementById("content");
+
+    function setMode(newMode) {
+      mode = newMode;
+      contentDiv.innerHTML = "";
+      if (mode === "learn") {
+        showLearnMode();
+      } else {
+        showQuizMode();
+      }
+    }
+
+    function showLearnMode() {
+      Object.entries(pluData).forEach(([plu, name]) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `<strong>${name}</strong><br>PLU: ${plu}`;
+        contentDiv.appendChild(div);
+      });
+    }
+
+    function showQuizMode() {
+      const entries = Object.entries(pluData);
+      const [plu, name] = entries[Math.floor(Math.random() * entries.length)];
+
+      const questionDiv = document.createElement("div");
+      questionDiv.className = "card";
+      questionDiv.innerHTML = `<strong>Was ist die PLU für:</strong><br>${name}<br>
+        <input type="number" id="answer" placeholder="PLU eingeben" />
+        <button onclick="checkAnswer(${plu})">Antwort prüfen</button>
+        <div id="feedback"></div>`;
+      contentDiv.appendChild(questionDiv);
+    }
+
+    function checkAnswer(correctPLU) {
+      const userAnswer = document.getElementById("answer").value;
+      const feedback = document.getElementById("feedback");
+
+      if (parseInt(userAnswer) === correctPLU) {
+        feedback.innerHTML = "Richtig!";
+        feedback.className = "correct";
+        new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg").play();
+      } else {
+        feedback.innerHTML = `Falsch. Die richtige PLU ist ${correctPLU}.`;
+        feedback.className = "wrong";
+        new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg").play();
+      }
+
+      setTimeout(() => {
+        contentDiv.innerHTML = "";
+        showQuizMode();
+      }, 2000);
+    }
+
+    setMode("learn");
+  </script>
+</body>
+</html>
